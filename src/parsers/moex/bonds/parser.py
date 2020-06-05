@@ -1,0 +1,75 @@
+import asyncio
+import functools
+from concurrent.futures.process import ProcessPoolExecutor
+from datetime import datetime
+
+import aiohttp
+from asyncpgsa import pg
+from lxml import etree
+from sqlalchemy.dialects import postgresql
+
+from db import Security
+
+
+CORP_BONDS_URL = 'https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQCB/securities.xml'
+
+
+def parse_xml_data(xml_data):
+    result = []
+
+    root = etree.fromstring(xml_data)
+    securities = root.xpath('/document/data[@id="securities"]/rows/row')
+    for security in securities:
+        code = security.get('SECID')
+        data = dict(security.attrib)
+
+        result.append((code, data))
+
+    return result
+
+
+async def process_response(response_data):
+    loop = asyncio.get_running_loop()
+    with ProcessPoolExecutor() as pool:
+        result = await loop.run_in_executor(
+            pool, functools.partial(parse_xml_data, response_data)
+        )
+
+    return result
+
+
+async def parse():
+    async with aiohttp.ClientSession() as session:
+        async with session.get(CORP_BONDS_URL) as resp:
+
+            print(f'Parsing started: {CORP_BONDS_URL}')
+
+            response_data = await resp.read()
+
+            now = datetime.utcnow()
+
+            values = [
+                {
+                    Security.isin.name: code,
+                    Security.data.name: data,
+                    Security.last_updated.name: now,
+                }
+                for code, data in await process_response(response_data)
+            ]
+
+            insert_stmt = postgresql.insert(Security).values(values)
+            update_columns = {
+                col.name: col
+                for col in insert_stmt.excluded
+                if col.name not in (Security.isin.name,)
+            }
+            on_conflict_update_stmt = insert_stmt.on_conflict_do_update(
+                index_elements=[Security.isin],
+                set_=update_columns,
+            )
+
+            await pg.fetchrow(on_conflict_update_stmt)
+
+            print(f'Parsing finished: {CORP_BONDS_URL}')
+
+    return 'success'
