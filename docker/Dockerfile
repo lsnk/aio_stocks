@@ -2,14 +2,21 @@ FROM python:3.8-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+# Install system dependencies
+RUN apt-get update && apt-get install -y build-essential libpq-dev
 
+# Install python packages
+COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY src/ .
+# Remove system build dependencies
+RUN apt-get remove -y build-essential
 
+# Copy project source
+COPY src/ .
 ENV PYTHONPATH=/app
 
+# Copy scripts and make them executable
 ENV USR_LOCAL_BIN=/usr/local/bin/
 COPY ./docker/scripts/*.sh $USR_LOCAL_BIN/
 RUN for i in $USR_LOCAL_BIN/*.sh; do \
