@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    command: start_api.sh
+    env_file:
+      - .env
+    network_mode: "host"
+
+  parsers:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    command: python parsers/run.py
+    env_file:
+      - .env
