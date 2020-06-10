@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+
+  postgres:
+    image: postgres:12-alpine
+    ports:
+      - "15432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=aio_stocks
+      - POSTGRES_USER=aio_stocks
+      - POSTGRES_PASSWORD=aio_stocks
+
+  api:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    command: start_api.sh
+    ports:
+      - "8081:8000"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=aio_stocks
+      - DB_PASSWORD=aio_stocks
+      - DB_NAME=aio_stocks
+      - SETTINGS_MODULE=settings.dev
+
+  parsers:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    command: python parsers/run.py
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=aio_stocks
+      - DB_PASSWORD=aio_stocks
+      - DB_NAME=aio_stocks
+      - SETTINGS_MODULE=settings.dev
+
+volumes:
+  postgres_data:

@@ -1,5 +1,6 @@
 import asyncio
 import functools
+import logging
 from concurrent.futures.process import ProcessPoolExecutor
 from datetime import datetime
 
@@ -11,7 +12,7 @@ from sqlalchemy.dialects import postgresql
 from db import Security
 
 
-CORP_BONDS_URL = 'https://iss.moex.com/iss/engines/stock/markets/bonds/boards/TQCB/securities.xml'
+logger = logging.getLogger('parser.app')
 
 
 def parse_xml_data(xml_data):
@@ -38,11 +39,12 @@ async def process_response(response_data):
     return result
 
 
-async def parse():
+async def parse(url, description):
     async with aiohttp.ClientSession() as session:
-        async with session.get(CORP_BONDS_URL) as resp:
+        async with session.get(url) as resp:
 
-            print(f'Parsing started: {CORP_BONDS_URL}')
+            logger.info(f'Parsing started: {description}')
+            logger.debug(f'Parsing url: {url}')
 
             response_data = await resp.read()
 
@@ -70,6 +72,4 @@ async def parse():
 
             await pg.fetchrow(on_conflict_update_stmt)
 
-            print(f'Parsing finished: {CORP_BONDS_URL}')
-
-    return 'success'
+            logger.info(f'Parsing finished: {description}')

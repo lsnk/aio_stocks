@@ -1,3 +1,4 @@
+from asyncpgsa import pg
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import JSON
@@ -25,3 +26,17 @@ if __name__ == '__main__':
         connect_args={"options": "-c timezone=utc"},
     )
     Base.metadata.create_all(engine)
+
+
+async def connect_db():
+    await pg.init(
+        host=settings.DB_HOST,
+        port=settings.DB_PORT,
+        database=settings.DB_NAME,
+        user=settings.DB_USER,
+        password=settings.DB_PASSWORD,
+    )
+
+
+async def disconnect_db():
+    await pg.pool.close()

@@ -5,7 +5,7 @@ aiohttp < 4
 aiodns < 3
 cchardet < 3
 
-psycopg2 < 2.9
+psycopg2-binary < 2.9
 asyncpgsa < 1
 
 python-dotenv >= 0.13.0, < 0.14

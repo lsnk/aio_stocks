@@ -1,9 +1,10 @@
 #!/bin/bash
 
 set -o errexit
-set -o xtrace
 
 export PYTHONPATH=$PYTHONPATH:src
 
 python src/db.py
-uvicorn api.app:app
+
+uvicorn api.app:app &
+python src/parsers/run.py &
