@@ -1,13 +1,14 @@
-fastapi >= 0.55.0, <0.56.0
-uvicorn >= 0.11.5, <0.12
+fastapi >=0.58.0, <0.59.0
+uvicorn >=0.11.5, <0.12
+ujson >=3.0.0, <3.1
 
-aiohttp >= 3.6.2, < 4
-aiodns >= 2.0.0, < 3
-cchardet >= 2.1.6, < 3
+aiohttp >=3.6.2, <4
+aiodns >=2.0.0, <3
+cchardet >=2.1.6, <3
 
-psycopg2 >= 2.8.5, < 2.9
-asyncpgsa >=0.26.3, < 1
+psycopg2 >=2.8.5, <2.9
+asyncpgsa >=0.26.3, <1
 
-python-dotenv >= 0.13.0, < 0.14
+python-dotenv >=0.13.0, <0.14
 
-lxml >= 4.5.1, < 5
+lxml >=4.5.1, <5
