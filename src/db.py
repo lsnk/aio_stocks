@@ -1,4 +1,6 @@
+import ujson
 from asyncpgsa import pg
+from asyncpgsa.connection import get_dialect
 from sqlalchemy import Column
 from sqlalchemy import DateTime
 from sqlalchemy import JSON
@@ -28,6 +30,15 @@ if __name__ == '__main__':
     Base.metadata.create_all(engine)
 
 
+async def set_db_json_charset(connection):
+    await connection.set_type_codec(
+        'json',
+        encoder=ujson.dumps,
+        decoder=ujson.loads,
+        schema='pg_catalog',
+    )
+
+
 async def connect_db():
     await pg.init(
         host=settings.DB_HOST,
@@ -35,6 +46,8 @@ async def connect_db():
         database=settings.DB_NAME,
         user=settings.DB_USER,
         password=settings.DB_PASSWORD,
+
+        init=set_db_json_charset,
     )
 
 

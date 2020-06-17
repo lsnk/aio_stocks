@@ -1,4 +1,3 @@
-import ujson
 import uvicorn
 from asyncpgsa import pg
 from fastapi import FastAPI
@@ -27,11 +26,6 @@ async def shutdown():
 async def root(security_isin):
     query = select([Security]).where(Security.isin == security_isin.upper())
     result = await pg.fetchrow(query)
-
-    # TODO: не очень красиво
-    # https://github.com/CanopyTax/asyncpgsa/issues/44
-    result = dict(result)
-    result['data'] = ujson.loads(result['data'])
 
     return result
 
