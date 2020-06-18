@@ -1,3 +1,5 @@
+import functools
+
 import ujson
 from asyncpgsa import pg
 from asyncpgsa.connection import get_dialect
@@ -33,10 +35,21 @@ if __name__ == '__main__':
 async def set_db_json_charset(connection):
     await connection.set_type_codec(
         'json',
-        encoder=ujson.dumps,
+        encoder=lambda o: o,
         decoder=ujson.loads,
         schema='pg_catalog',
     )
+
+
+def get_json_connection_params():
+    dialect = get_dialect(
+        json_serializer=functools.partial(ujson.dumps, ensure_ascii=False)
+    )
+
+    return {
+        'init': set_db_json_charset,
+        'dialect': dialect,
+    }
 
 
 async def connect_db():
@@ -47,7 +60,7 @@ async def connect_db():
         user=settings.DB_USER,
         password=settings.DB_PASSWORD,
 
-        init=set_db_json_charset,
+        **get_json_connection_params(),
     )
 
 
