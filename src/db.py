@@ -27,7 +27,7 @@ class Security(Base):
 if __name__ == '__main__':
     engine = create_engine(
         settings.DB_URI,
-        connect_args={"options": "-c timezone=utc"},
+        connect_args={'options': '-c timezone=utc'},
     )
     Base.metadata.create_all(engine)
 

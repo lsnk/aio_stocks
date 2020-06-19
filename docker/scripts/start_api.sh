@@ -5,4 +5,4 @@ set -o nounset
 
 
 python db.py
-uvicorn --host 0.0.0.0 api.app:app
+gunicorn api.app:app -c gunicorn_conf.py

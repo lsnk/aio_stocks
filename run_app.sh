@@ -6,5 +6,6 @@ export PYTHONPATH=$PYTHONPATH:src
 
 python src/db.py
 
-uvicorn api.app:app &
+gunicorn api.app:app -c src/gunicorn_conf.py &
 python src/parsers/run.py &
+wait
