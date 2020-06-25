@@ -12,7 +12,7 @@ DB_PASSWORD = os.environ.get('DB_PASSWORD', 'postgres')
 
 DB_NAME = os.environ.get('DB_NAME', 'aio_stocks')
 
-DB_URI = f'postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
+DB_URI = f'postgres://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}'
 
 
 # Parsing

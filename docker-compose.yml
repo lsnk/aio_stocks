@@ -19,3 +19,11 @@ services:
     env_file:
       - .env
     network_mode: "host"
+
+  api-go:
+    build:
+      context: ./golang
+      dockerfile: ./docker/Dockerfile
+    env_file:
+      - .env
+    network_mode: "host"

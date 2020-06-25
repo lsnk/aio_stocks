@@ -19,7 +19,7 @@ services:
       dockerfile: ./docker/Dockerfile
     command: start_api.sh
     ports:
-      - "8081:8000"
+      - "8080:8000"
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
@@ -27,6 +27,19 @@ services:
       - DB_PASSWORD=aio_stocks
       - DB_NAME=aio_stocks
       - SETTINGS_MODULE=settings.dev
+
+  api-go:
+    build:
+      context: ./golang
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "8081:8001"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=aio_stocks
+      - DB_PASSWORD=aio_stocks
+      - DB_NAME=aio_stocks
 
   parsers:
     build:
