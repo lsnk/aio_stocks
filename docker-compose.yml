@@ -2,9 +2,10 @@ version: '3'
 
 services:
 
+  # PYTHON
   api:
     build:
-      context: .
+      context: ./python
       dockerfile: ./docker/Dockerfile
     command: start_api.sh
     env_file:
@@ -13,13 +14,14 @@ services:
 
   parsers:
     build:
-      context: .
+      context: ./python
       dockerfile: ./docker/Dockerfile
     command: python parsers/run.py
     env_file:
       - .env
     network_mode: "host"
 
+  # GOLANG
   api-go:
     build:
       context: ./golang
@@ -27,3 +29,5 @@ services:
     env_file:
       - .env
     network_mode: "host"
+
+  # RUST

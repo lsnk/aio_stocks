@@ -15,7 +15,7 @@ services:
 
   api:
     build:
-      context: .
+      context: ./python
       dockerfile: ./docker/Dockerfile
     command: start_api.sh
     ports:
@@ -30,7 +30,7 @@ services:
 
   parsers:
     build:
-      context: .
+      context: ./python
       dockerfile: ./docker/Dockerfile
     command: python parsers/run.py
     environment:

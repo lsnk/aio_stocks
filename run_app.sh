@@ -2,10 +2,10 @@
 
 set -o errexit
 
-export PYTHONPATH=$PYTHONPATH:src
+export PYTHONPATH=$PYTHONPATH:python/src
 
-python src/db.py
+python python/src/db.py
 
-gunicorn api.app:app -c src/gunicorn_conf.py &
-python src/parsers/run.py &
+gunicorn api.app:app -c python/src/gunicorn_conf.py &
+python python/src/parsers/run.py &
 wait
