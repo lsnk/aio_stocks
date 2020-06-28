@@ -17,29 +17,29 @@ var pool *pgxpool.Pool
 
 func main() {
 
-	err := godotenv.Load("../../.env")
+	godotenv.Load("../../.env")
 
 	postgresHost, ok := os.LookupEnv("DB_HOST")
 	if !ok {
 		fmt.Printf("%s not set\n", "DB_HOST")
 		os.Exit(1)
 	}
-	postgresPost := os.Getenv("DB_PORT")
+	postgresPort, ok := os.LookupEnv("DB_PORT")
 	if !ok {
 		fmt.Printf("%s not set\n", "DB_PORT")
 		os.Exit(1)
 	}
-	postgresUser := os.Getenv("DB_USER")
+	postgresUser, ok := os.LookupEnv("DB_USER")
 	if !ok {
 		fmt.Printf("%s not set\n", "DB_USER")
 		os.Exit(1)
 	}
-	postgresPassword := os.Getenv("DB_PASSWORD")
+	postgresPassword, ok := os.LookupEnv("DB_PASSWORD")
 	if !ok {
 		fmt.Printf("%s not set\n", "DB_PASSWORD")
 		os.Exit(1)
 	}
-	postgresDatabaseName := os.Getenv("DB_NAME")
+	postgresDatabaseName, ok := os.LookupEnv("DB_NAME")
 	if !ok {
 		fmt.Printf("%s not set\n", "DB_NAME")
 		os.Exit(1)
@@ -50,10 +50,11 @@ func main() {
 		postgresUser,
 		postgresPassword,
 		postgresHost,
-		postgresPost,
+		postgresPort,
 		postgresDatabaseName,
 	)
 
+    var err error
 	pool, err = pgxpool.Connect(context.Background(), postgresURI)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
