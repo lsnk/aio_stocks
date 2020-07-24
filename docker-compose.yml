@@ -11,6 +11,7 @@ services:
     env_file:
       - .env
     network_mode: "host"
+    restart: unless-stopped
 
   parsers:
     build:
@@ -20,6 +21,7 @@ services:
     env_file:
       - .env
     network_mode: "host"
+    restart: unless-stopped
 
   # GOLANG
   api-go:
@@ -29,5 +31,6 @@ services:
     env_file:
       - .env
     network_mode: "host"
+    restart: unless-stopped
 
   # RUST
