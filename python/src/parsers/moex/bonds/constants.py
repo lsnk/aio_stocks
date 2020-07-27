@@ -1,8 +1,9 @@
-BASE_URL = 'https://iss.moex.com/iss/engines/stock/markets/bonds/boards'
+from parsers.moex.constants import MOEX_API_BASE_URL
 
-CORP_BONDS_URL = f'{BASE_URL}/TQCB/securities.xml'
-GOV_BONDS_URL = f'{BASE_URL}/TQOB/securities.xml'
-EUR_BONDS_URL = f'{BASE_URL}/TQOD/securities.xml'
+
+CORP_BONDS_URL = f'{MOEX_API_BASE_URL}/bonds/boards/TQCB/securities.xml'
+GOV_BONDS_URL = f'{MOEX_API_BASE_URL}/bonds/boards/TQOB/securities.xml'
+EUR_BONDS_URL = f'{MOEX_API_BASE_URL}/bonds/boards/TQOD/securities.xml'
 
 
 PARSING_URLS = {

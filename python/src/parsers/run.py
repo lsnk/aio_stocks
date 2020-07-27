@@ -2,10 +2,12 @@ import asyncio
 import logging
 import signal
 from asyncio import CancelledError
+from itertools import chain
 
 from db import connect_db
 from db import disconnect_db
 from parsers.moex.bonds import parsers as moex_bond_parsers
+from parsers.moex.shares import parsers as moex_shares_parsers
 from settings import PARSING_INTERVAL
 
 
@@ -50,7 +52,7 @@ async def background_parsing(interval):
 
     await connect_db()
 
-    parsers = moex_bond_parsers
+    parsers = chain(moex_bond_parsers, moex_shares_parsers)
 
     parsing_tasks = [
         asyncio.create_task(parsing_task(coro, interval))
