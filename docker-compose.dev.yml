@@ -41,18 +41,31 @@ services:
       - DB_NAME=aio_stocks
       - SETTINGS_MODULE=settings.dev
 
-    api-go:
-      build:
-        context: ./golang
-        dockerfile: ./docker/Dockerfile
-      ports:
-        - "8081:8001"
-      environment:
-        - DB_HOST=postgres
-        - DB_PORT=5432
-        - DB_USER=aio_stocks
-        - DB_PASSWORD=aio_stocks
-        - DB_NAME=aio_stocks
+  api-go:
+    build:
+      context: ./golang
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "8081:8001"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=aio_stocks
+      - DB_PASSWORD=aio_stocks
+      - DB_NAME=aio_stocks
+
+  api-rust:
+    build:
+      context: ./rustlang
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "8082:8002"
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=aio_stocks
+      - DB_PASSWORD=aio_stocks
+      - DB_NAME=aio_stocks
 
 volumes:
   postgres_data:

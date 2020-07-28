@@ -1,5 +1,5 @@
 [package]
-name = "rustlang"
+name = "aio_stocks"
 version = "0.1.0"
 authors = ["Nikita Krokosh <de.lsnk@gmail.com>"]
 edition = "2018"
@@ -7,3 +7,20 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+futures = "0.1.9"
+httparse = "1.1"
+serde = "1.0"
+serde_json = "1.0"
+serde_derive = "1.0"
+num_cpus = "1.0"
+tokio-proto = "0.1"
+tokio-service = "0.1"
+tokio-minihttp = { git = "https://github.com/tokio-rs/tokio-minihttp" }
+
+chrono = "0.4"
+time = "0.2"
+postgres = { version = "0.15", features = ["with-chrono", "with-serde_json"] }
+r2d2 = "0.7"
+futures-cpupool = "0.1"
+r2d2_postgres = "0.13"
+dotenv = "0.15"

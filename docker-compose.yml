@@ -34,3 +34,11 @@ services:
     restart: unless-stopped
 
   # RUST
+  api_rust:
+    build:
+      context: ./rustlang
+      dockerfile: ./docker/Dockerfile
+    env_file:
+      - .env
+    network_mode: "host"
+    restart: unless-stopped
