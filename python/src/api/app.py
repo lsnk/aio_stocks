@@ -31,4 +31,4 @@ async def root(security_isin):
 
 
 if __name__ == '__main__':
-    uvicorn.run('api.app:app', host='127.0.0.1', access_log=False)
+    uvicorn.run('api.app:app', host='127.0.0.1', access_log=False, reload=True)
