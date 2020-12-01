@@ -1,6 +1,6 @@
-fastapi >=0.61.0, <0.62.0
-uvicorn >=0.11.8, <0.12
-ujson >=3.1.0, <3.2
+fastapi >=0.62.0, <0.63.0
+uvicorn >=0.12.3, <0.13
+ujson >=4.0.1, <4.1
 
 gunicorn >= 20.0.4, <20.1
 
@@ -11,6 +11,6 @@ cchardet >=2.1.6, <3
 psycopg2 >=2.8.5, <2.9
 asyncpgsa >=0.26.3, <1
 
-python-dotenv >=0.14.0, <0.15
+python-dotenv >=0.15.0, <0.16
 
 lxml >=4.5.1, <5
