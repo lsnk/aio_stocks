@@ -21,6 +21,7 @@ class Security(Base):
 
     isin = Column(String, primary_key=True)
     data = Column(JSON)
+    currency = Column(String, primary_key=True)
     last_updated = Column(DateTime, nullable=False)
 
 

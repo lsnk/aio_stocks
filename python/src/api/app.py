@@ -1,7 +1,7 @@
+import sqlalchemy as sa
 import uvicorn
 from asyncpgsa import pg
 from fastapi import FastAPI
-from sqlalchemy import select
 from starlette.responses import UJSONResponse
 
 from db import Security
@@ -23,8 +23,13 @@ async def shutdown():
 
 
 @app.get('/securities/{security_isin}')
-async def root(security_isin):
-    query = select([Security]).where(Security.isin == security_isin.upper())
+async def root(security_isin: str, currency: str = 'SUR'):
+    query = sa.select([Security]).where(
+        sa.and_(
+            Security.isin == security_isin.upper(),
+            Security.currency == currency.upper(),
+        )
+    )
     result = await pg.fetchrow(query)
 
     return result

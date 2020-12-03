@@ -55,6 +55,7 @@ async def parse(url, description):
                     Security.isin.name: code,
                     Security.data.name: data,
                     Security.last_updated.name: now,
+                    Security.currency.name: data['CURRENCYID'],
                 }
                 for code, data in await process_response(response_data)
             ]
@@ -66,7 +67,7 @@ async def parse(url, description):
                 if col.name not in (Security.isin.name,)
             }
             on_conflict_update_stmt = insert_stmt.on_conflict_do_update(
-                index_elements=[Security.isin],
+                index_elements=[Security.isin, Security.currency],
                 set_=update_columns,
             )
 

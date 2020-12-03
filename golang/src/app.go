@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"time"
@@ -71,14 +72,23 @@ func Securities(w http.ResponseWriter, r *http.Request) {
 
 	request_isin := path.Base(r.URL.Path)
 
+    var request_currency string
+	m, _ := url.ParseQuery(r.URL.RawQuery)
+    if len(m["currency"]) != 0 {
+        request_currency = m["currency"][0]
+    } else {
+        request_currency = "SUR"
+    }
+
 	var isin string
 	var data []byte
 	var last_updated time.Time
 
 	err := pool.QueryRow(
 		context.Background(),
-		"select isin, data, last_updated from securities where isin=$1",
+		"select isin, data, last_updated from securities where isin=$1 and currency=$2",
 		request_isin,
+		request_currency,
 	).Scan(&isin, &data, &last_updated)
 
 	var json_data map[string]interface{}
