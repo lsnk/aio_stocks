@@ -3,6 +3,7 @@ extern crate futures;
 extern crate futures_cpupool;
 extern crate num_cpus;
 extern crate postgres;
+extern crate querystring;
 extern crate r2d2;
 extern crate r2d2_postgres;
 extern crate serde_json;
@@ -31,11 +32,14 @@ struct Techempower {
 }
 
 #[derive(Serialize)]
+#[derive(Debug)]
 struct SecurityData {
     isin: String,
     data: serde_json::Value,
     last_updated: String,
 }
+
+const DEFAULT_CURRENCY: &str = "SUR";
 
 impl Service for Techempower {
     type Request = Request;
@@ -57,6 +61,16 @@ impl Service for Techempower {
     }
 }
 
+fn get_request_currency(query_params_string: &str) -> String {
+    let query_params = querystring::querify(query_params_string.trim_start_matches("?"));
+    for (k, v) in query_params {
+        if k.to_lowercase() == "currency" {
+            return v.to_uppercase();
+        }
+    }
+    return DEFAULT_CURRENCY.to_string();
+}
+
 impl Techempower {
     fn securities(&self, req: &Request) -> Box<dyn Future<Item = Response, Error = io::Error>> {
         let path = req.path();
@@ -69,19 +83,42 @@ impl Techempower {
             return Box::new(future::ok(resp));
         }
 
-        let request_isin = request_url_parts[2].to_string();
+        let request_path = request_url_parts[2];
 
-        let row = self.get_db_row(request_isin);
+        let request_isin;
+        let request_currency;
 
-        return Box::new(row.map(|row| {
-            let mut resp = Response::new();
-            resp.header("Content-Type", "application/json")
-                .body(&serde_json::to_string(&row).unwrap());
-            return resp;
-        }));
+        if let Some(query_params_pos) = request_path.find("?") {
+            let (isin, query_params_string) = request_path.split_at(query_params_pos);
+            request_isin = isin;
+            request_currency = get_request_currency(query_params_string);
+        } else {
+            request_isin = request_path;
+            request_currency = DEFAULT_CURRENCY.to_string();
+        }
+
+        let row = self.get_db_row(request_isin.to_string(), request_currency);
+
+        return Box::new(
+            row.then(|row| {
+                match row {
+                    Ok(row) => {
+                        let mut resp = Response::new();
+                        resp.header("Content-Type", "application/json")
+                            .body(&serde_json::to_string(&row).unwrap());
+                        return Box::new(future::ok(resp))
+                    },
+                    Err(_) => {
+                        let mut resp = Response::new();
+                        resp.status_code(404, "Does not exist");
+                        return Box::new(future::ok(resp))
+                    }
+                }
+            })
+        );
     }
 
-    fn get_db_row(&self, isin: String) -> CpuFuture<SecurityData, io::Error> {
+    fn get_db_row(&self, isin: String, currency: String) -> CpuFuture<SecurityData, io::Error> {
         let db = self.db_pool.clone();
         self.thread_pool.spawn_fn(move || {
             let conn = db
@@ -89,8 +126,14 @@ impl Techempower {
                 .map_err(|e| io::Error::new(io::ErrorKind::Other, format!("timeout: {}", e)))?;
 
             let stmt = conn
-                .prepare_cached("select isin, data, last_updated from securities where isin=$1")?;
-            let rows = stmt.query(&[&isin])?;
+                .prepare_cached(
+                    "select isin, data, last_updated from securities where isin=$1 and currency=$2"
+                )?;
+            let rows = stmt.query(&[&isin, &currency])?;
+
+            if rows.is_empty() {
+                return Err(io::Error::new(io::ErrorKind::Other, format!("Row does not exist")));
+            }
 
             let row = rows.get(0);
 
