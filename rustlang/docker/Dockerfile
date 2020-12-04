@@ -6,7 +6,7 @@ COPY src/ src
 COPY Cargo.lock .
 COPY Cargo.toml .
 
-RUN cargo build --release
+RUN RUSTFLAGS="-C target-cpu=native" cargo build --release
 
 EXPOSE 8002
 
