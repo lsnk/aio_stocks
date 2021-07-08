@@ -10,6 +10,7 @@ cchardet >=2.1.6, <3
 
 psycopg2 >=2.8.5, <2.9
 asyncpgsa >=0.26.3, <1
+SQLAlchemy <1.4
 
 python-dotenv >=0.15.0, <0.16
 
